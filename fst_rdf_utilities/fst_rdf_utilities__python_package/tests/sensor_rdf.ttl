@@ -1,0 +1,101 @@
+BASE <https://w3id.org/fst/resource/>
+PREFIX dbo: <http://dbpedia.org/ontology/>
+PREFIX dcmitype: <http://purl.org/dc/dcmitype/>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX fst1: <https://w3id.org/fst/resource/>
+PREFIX quantitykind: <http://qudt.org/vocab/quantitykind/>
+PREFIX qudt: <http://qudt.org/schema/qudt/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX schema: <http://schema.org/>
+PREFIX sosa: <http://www.w3.org/ns/sosa/>
+PREFIX ssn: <http://www.w3.org/ns/ssn/>
+PREFIX ssn-system: <http://www.w3.org/ns/ssn/systems/>
+PREFIX unit: <http://qudt.org/vocab/unit/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+<0184ebd9-988b-7bba-8203-06be5cf6bbb8/rdf.json>
+    a foaf:Document ;
+    foaf:primaryTopic <0184ebd9-988b-7bba-8203-06be5cf6bbb8> ;
+.
+
+<0184ebd9-988b-7bba-8203-06be5cf6bbb8/rdf.ttl>
+    a foaf:Document ;
+    foaf:primaryTopic <0184ebd9-988b-7bba-8203-06be5cf6bbb8> ;
+.
+
+<0184ebd9-988b-7bba-8203-06be5cf6bbb8/rdf.xml>
+    a foaf:Document ;
+    foaf:primaryTopic <0184ebd9-988b-7bba-8203-06be5cf6bbb8> ;
+.
+
+<0184ebd9-988b-7bba-8203-06be5cf6bbb8/Bias>
+    a
+        ssn:Property ,
+        ssn-system:SystemProperty ;
+    schema:name "bias" ;
+    schema:value 0e+00 ;
+    rdfs:comment "offset" ;
+    ssn:isPropertyOf <0184ebd9-988b-7bba-8203-06be5cf6bbb8/SensorCapability> ;
+.
+
+<0184ebd9-988b-7bba-8203-06be5cf6bbb8/MeasurementRange>
+    a
+        qudt:Quantity ,
+        ssn:Property ,
+        ssn-system:MeasurementRange ;
+    qudt:hasQuantityKind quantitykind:Pressure ;
+    qudt:unit unit:BAR ;
+    schema:maxValue 10 ;
+    schema:minValue 0 ;
+    schema:name "measurement range" ;
+    schema:valueReference "absolut" ;
+    ssn:isPropertyOf <0184ebd9-988b-7bba-8203-06be5cf6bbb8/SensorCapability> ;
+.
+
+<0184ebd9-988b-7bba-8203-06be5cf6bbb8/Sensitivity>
+    a
+        ssn:Property ,
+        ssn-system:Sensitivity ;
+    schema:name "sensitivity" ;
+    schema:value 1e+00 ;
+    rdfs:comment "gain" ;
+    ssn:isPropertyOf <0184ebd9-988b-7bba-8203-06be5cf6bbb8/SensorCapability> ;
+.
+
+<0184ebd9-988b-7bba-8203-06be5cf6bbb8>
+    a
+        dcmitype:PhysicalObject ,
+        sosa:Sensor ;
+    dbo:maintainedBy "Rexer" ;
+    dbo:owner "FST" ;
+    dcterms:identifier
+        "0184ebd9-988b-7bba-8203-06be5cf6bbb8" ,
+        "fst-inv:D092" ;
+    dcterms:modified "None" ;
+    schema:documentation <docs/> ;
+    schema:keywords
+        "Druck" ,
+        "Piezoresistiv" ,
+        "absolut" ;
+    schema:location "Hydropulser Schrank" ;
+    schema:manufacturer "Keller" ;
+    schema:name "PAA-33X/10bar" ;
+    schema:serialNumber "1011246" ;
+    schema:subjectOf <docs/> ;
+    sosa:usedProcedure "Piezoresistiv" ;
+    ssn-system:hasSystemCapability <0184ebd9-988b-7bba-8203-06be5cf6bbb8/SensorCapability> ;
+.
+
+<0184ebd9-988b-7bba-8203-06be5cf6bbb8/SensorCapability>
+    a
+        ssn:Property ,
+        ssn-system:SystemCapability ;
+    schema:name "sensor capabilities" ;
+    rdfs:comment "sensor capabilities not regarding any conditions at this time" ;
+    ssn:hasProperty
+        <0184ebd9-988b-7bba-8203-06be5cf6bbb8/Bias> ,
+        <0184ebd9-988b-7bba-8203-06be5cf6bbb8/MeasurementRange> ,
+        <0184ebd9-988b-7bba-8203-06be5cf6bbb8/Sensitivity> ;
+.
+
