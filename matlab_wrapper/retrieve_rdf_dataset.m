@@ -4,12 +4,12 @@ function [file_name, pID_sensor] = retrieve_rdf_dataset(pID_url)
 currentFileFullPath = mfilename('fullpath');
 [dirpath,~,~] = fileparts(currentFileFullPath);
 % Path to the testing environment
-rdf_test_path = [dirpath, '\rdf_test'];
+fst_rdf_utilities__python_package_path = [dirpath, '\..\fst_rdf_utilities__python_package'];
 
 file_name = convertPIDURLToMatlabName(pID_url);
 
 % TODO: make sure, that the cached data set gets ignored in the repository
-mat_file_path =  [rdf_test_path, '\_cached_data_sets\', file_name, '.mat'];
+mat_file_path =  [fst_rdf_utilities__python_package_path, '\_cached_data_sets\', file_name, '.mat'];
 % Search for the .mat 
 exists_returncode = exist(mat_file_path, 'file');
 
@@ -28,7 +28,7 @@ end
 
 if exists_returncode == 0 || calculated_difference >= cached_dataset_ttl_value
     % ----- NOTE possible attack vector for a code ingestion attack! --------
-    command = ['python ', rdf_test_path, '\cli.py "', char(pID_url), '"'];
+    command = ['python ', fst_rdf_utilities__python_package_path, '\cli.py "', char(pID_url), '"'];
     [status,cmdout] = system(command);
     if status ~= 0
         error(['FST_ASAM_XIL_API ERROR: ', cmdout])

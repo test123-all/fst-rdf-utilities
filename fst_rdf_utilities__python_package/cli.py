@@ -2,8 +2,10 @@
 import argparse
 from pathlib import Path
 
-from rdf_test import utilities
-from rdf_test import rdf_to_dict
+from fst_rdf_utilities_py import utilities
+from fst_rdf_utilities_py import rdf_to_dict
+
+
 def main():
     # Testable with command $ poetry run python cli.py "https://w3id.org/fst/resource/0184ebd9-988b-7bb9-bf0b-8ac992cecf10"
     file_directory_path: Path = Path(__file__).resolve().parent
