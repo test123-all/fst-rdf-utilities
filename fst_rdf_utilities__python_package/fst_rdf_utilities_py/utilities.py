@@ -12,7 +12,6 @@ from bs4 import BeautifulSoup
 import validators.url
 
 from scipy import io as sio
-import arrow
 
 
 # TODO check if the rdflib sparql result generator is convertable to a list,

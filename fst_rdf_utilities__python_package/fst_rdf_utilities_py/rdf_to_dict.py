@@ -3,11 +3,11 @@ from pathlib import Path
 import hashlib
 
 import rdflib
-from rdflib import URIRef
 import arrow
 
-from .utilities import load_git_rdf, get_version_commit_hash
+from .utilities import load_git_rdf
 from .dict_utilities import combine_dicts_recursively, set_value_inside_nested_dict_with_path, get_value_inside_nested_dict_with_path
+
 
 def _get_uuid_and_prefix(uriref: rdflib.term.URIRef, namespaces: set) -> (str, str):
     # TODO: FIXME: This function needs refactoring and a overhaul. There are codeblocks qhich are relly similar and
