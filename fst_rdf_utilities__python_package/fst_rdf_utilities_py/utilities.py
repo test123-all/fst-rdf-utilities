@@ -77,14 +77,63 @@ def follow_all_redirects(persistent_id_url: str, access_token: str =None, break_
 
     return end_redirect_url, end_redirect_response_text
 
-    # TODO: Add content negotiation
-    g = rdflib.Graph()
-    g.parse(redirect_file_url_cleaned, format="turtle", publicID=persistent_id_url)
-    # g.parse(data=response.text, format="turtle", publicID=persistent_id_url)
-    if redirect_file_url_cleaned:
-        return [g, redirect_file_url_cleaned]
+
+def load_git_rdf(persistent_id_url: str, access_token: str =None) -> (rdflib.Graph, str):
+    # TODO: Check if the url is a https URL when a access token is provided to make sure the access token isn't send in clear
+    #  text to the first redirect and leaked there. Redirect it with a warning in the log.
+    # #### NOTE: Der Fall, dass man auch auf unsupporteten Seiten daten laden möchte ist eh irrelevant wiel ich ohne die
+    # API nicht an die sha commits und die versionierung komme.
+    # Follow the redirects the first time and check if the end file is of type rdf.
+    # if it isn't and a access token is provided try to get it with the access token. zu dem access token sollte noch
+    # eine deklaration für die seite zu der er gültig ist, sonst probiert man bei mehreren alle tokens durch.. das mit
+    # dem durchprobieren könnte eh wichtig werden wenn man mehrere group acces tokens von anderen forschungsgruppen
+    # bekommt.. da wäre es dann aber besser einfach einen nutzer access token zu verwenden, auch wenn er sogesehen unsicherer ist.
+    # Lösung ist: es ist derzeit nur möglich seinen eigenen user token zu verwenden und nicht über andere Gruppen
+    # -> zusammengefasst wird es sehr schwierig ohne Mehraufwand die zugriffsrechte in gitlab zu ändern, aber das ist
+    # ein Gitlab problem und interessiert derzeit noch nicht.
+    if access_token:
+        end_redirect_url, end_redirect_response_text = follow_all_redirects(persistent_id_url, access_token=access_token)
     else:
-        return [g, response.request.url]
+        end_redirect_url, end_redirect_response_text = follow_all_redirects(persistent_id_url)
+
+    # Get on which service the file lives (needed for the sha commit (only obtainbale through the API) and if the file is private to retry the request with the access token)
+    git_instance_name = get_git_instance_service(end_redirect_url)
+    # Check if the service is supported
+    SUPPORTED_GIT_INSTANCE_SERVICES = ['GitLab']
+    if not git_instance_name:
+        # TODO: FIXME: Maybe move the code into the get_git_instance_service function. There might be more general
+        #  functions on the internet that detect all services and I just need to match the got one with the supported
+        #  list later. The services could als be detected through ports or responses to generel requests. That is also
+        #  used in hacking for example in nmap to find possible vulnerable sites -> in germany probably a 'Grauzone'
+        # TODO: FIXME: Find a better suiting exception
+        raise Exception((f"The git instance service couldn't be got!"))
+    if not git_instance_name in SUPPORTED_GIT_INSTANCE_SERVICES:
+        raise Exception((f"The git instance service you provided '{git_instance_name}' is currently not supported!\n"
+                         f"The currently supported ones are: {SUPPORTED_GIT_INSTANCE_SERVICES}"))
+
+    g = rdflib.Graph()
+    try:
+        g.parse(data=end_redirect_response_text, format="turtle", publicID=persistent_id_url)
+    # FIXME: TODO: Search for a better suiting exception class
+    # TODO: problem is the file could be obtainable but isn't in a rdf format I could check that with the sha commit
+    except Exception:
+        # FIXME: ##### WARN: INSECURE! Because retry #########
+        #  If I just retry with the access key the key might be leaked to a different malicious site
+        # Retry the request through the API with the access token
+        # NOTE: end_redirect_url could be in this case the login URL therefore the whole request needs to be redone.
+        if access_token:
+            rdf_content, version_commit_id = get_GitLab_file_content_and_version_commit_id(end_redirect_url,
+                                                                                           access_token=access_token)
+        else:
+            raise
+
+    else:
+        rdf_content, version_commit_id = get_GitLab_file_content_and_version_commit_id(end_redirect_url)
+
+    g = rdflib.Graph()
+    g.parse(data=rdf_content, format="turtle", publicID=persistent_id_url)
+
+    return [g, version_commit_id]
 
 
 def load_sensor_rdf_and_parse_to_dict(persistent_id_url: str) -> [dict, str]:
