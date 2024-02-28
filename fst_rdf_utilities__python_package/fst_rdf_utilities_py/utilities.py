@@ -1,5 +1,6 @@
 import re
 from pathlib import Path
+import base64
 from copy import deepcopy
 import sys
 # sys.setrecursionlimit(5000)
@@ -279,6 +280,17 @@ def get_git_instance_service(url: str) -> str:
     return git_instance_name
 
 
+def get_GitLab_file_content_and_version_commit_id(url, access_token:str=None):
+    # TODO: declare this function as private and create a get_rdf_file_content_and_version_commit_id function and add
+    #  at position one a argument service_id or service_name and match it to the supported ones and call the private
+    #  functions.
+    if access_token:
+        headers = {'PRIVATE-TOKEN': access_token}
+    else:
+        headers = None
+    return_variables_dict = parse_url_into_parts(url)
+
+
 
     api_base_url = f"{return_variables_dict['base_url']}/api/v4/"
 
@@ -286,7 +298,10 @@ def get_git_instance_service(url: str) -> str:
     # Get project id
     with requests.Session() as s:
         project_path_url_encoded = requests.utils.quote(return_variables_dict['project_path_url'], safe='')
-        r = s.get(f"{api_base_url}/projects/{project_path_url_encoded}")
+        if headers:
+            r = s.get(f"{api_base_url}/projects/{project_path_url_encoded}", headers=headers)
+        else:
+            r = s.get(f"{api_base_url}/projects/{project_path_url_encoded}")
 
     projectid = r.json()['id']  # '84807'
 
@@ -295,11 +310,17 @@ def get_git_instance_service(url: str) -> str:
         URLencodedfilepath = requests.utils.quote(return_variables_dict['repository_file_path'], safe='')
         # TODO: FIXME: tokens from a token vault need to be used here
         # TODO: main branch is sleected, might be a problem in the future if useres aren't consistent with their branches
-        # headers = {'PRIVATE-TOKEN': 'glpat-rFxz7TPcPugTsPSneuLk'}
-        response = s.get(
-            f'{api_base_url}/projects/{projectid}/repository/files/{URLencodedfilepath}?ref=main')  # , headers=headers)
+        file_api_url = f'{api_base_url}/projects/{projectid}/repository/files/{URLencodedfilepath}?ref=main'
+        if headers:
+            response = s.get(file_api_url, headers=headers)
+        else:
+            response = s.get(file_api_url)
 
-        return response.json()['commit_id']
+    # Decode the Base64 encoded content of the file
+    decoded_content = base64.b64decode(response.json()['content']).decode('utf-8')
+    # TODO: Check if the encoding is base64 and what the https encoding (usually utf-8) is
+
+    return decoded_content, response.json()['commit_id']
 
 
 # def save_sensor_rdf_as_mat_file(pID_url: str, save_to_directory_path: [Path, str]) -> None:
