@@ -260,10 +260,16 @@ def parse_RDF_file_to_dict(file_path: [str, Path], main_subject: rdflib.URIRef, 
 
     return rdf_dict
 
-def parse_online_RDF_to_dict(persistent_id_url: str) -> (dict, str):
-    [graph, redirect_file_url_cleaned] = load_git_rdf(persistent_id_url)
+def parse_online_RDF_to_dict(persistent_id_url: str, access_token: str =None) -> (dict, str):
+    # TODO: That only works for normal requests that aren't to private files. For private files the API of gitlab needs to be used. This apis probably differ between all big git instances like GitLab, GitHub, Gitea, GitBucket, SourceForge, Gogs and so on
+    # Wenn kein Token gegeben ist  kann ein normaler request benutzt werden, der für alle plattformen funktionieren sollte
+    if not access_token:
+        graph, version_commit_id = load_git_rdf(persistent_id_url)
+    else:
+        # Alternativ muss ein request über die API geschehen, die sich bei allen Plattformen wahrscheinlich unterscheided. D.h. es muss erstmal bestimmt werdne wlevhe platform es ist
+        graph, version_commit_id = load_git_rdf(persistent_id_url, access_token=access_token)
 
-    # Check if the main_subject exists a subject in the graph
+    # Check if the main_subject exists as a subject in the graph
     main_subject = rdflib.URIRef('')
     for item in set(graph.subjects()):
         if str(item) == persistent_id_url:
@@ -284,7 +290,7 @@ def parse_online_RDF_to_dict(persistent_id_url: str) -> (dict, str):
     TTL = 1800  # seconds standard time dns cache time
     online_rdf_dict[main_subject_uuid]['dataset_METADATA'] = {
         'URI': persistent_id_url,
-        'version_commit_hash': get_version_commit_hash(redirect_file_url_cleaned),
+        'version_commit_hash': version_commit_id,
         'dataset_record_metadata': {
             'data_cached_at_timestamp': str(arrow.utcnow()),
             'TTL': {
@@ -296,3 +302,4 @@ def parse_online_RDF_to_dict(persistent_id_url: str) -> (dict, str):
     }
 
     return online_rdf_dict, main_subject_uuid
+
