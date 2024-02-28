@@ -9,23 +9,42 @@ from rdflib import URIRef
 import requests
 from bs4 import BeautifulSoup
 import validators.url
+
 from scipy import io as sio
 import arrow
 
 
 # TODO check if the rdflib sparql result generator is convertable to a list,
 # TODO: if yes check if there is always exactly one entity of something
+def follow_all_redirects(persistent_id_url: str, access_token: str =None, break_before_login_flag: bool=True) -> (str, str):
+    if access_token:
+        headers = {'PRIVATE-TOKEN': access_token}
+    else:
+        headers = None
 
-def load_git_rdf(persistent_id_url: str) -> (rdflib.Graph, str):
-    # TODO: check if the url alredy contains the .ttl or a similar ending
-    # Get rdf data from the persistent_id_URI
+    # Try to get the rdf data from the persistent_id_URI
     with requests.Session() as s:
         # 'https://w3id.org/fst/resource/0184ebd9-988b-7bb9-ae4b-17bd29feb36c'
-        response = s.get(f'{persistent_id_url}.ttl')
+        # TODO: check if the url alredy contains the .ttl or a similar ending
+        # TODO: Add content negotiation that it won't be necessary to force the type
+        # TODO: FIXME: In a multi stage redirect the access token could be leaked again at this point since the token
+        #  should be for the service at the end.
+        if headers:
+            response_0 = s.get(f'{persistent_id_url}.ttl', headers=headers)
+        else:
+            response_0 = s.get(f'{persistent_id_url}.ttl')
+    # Wenn ein access token gegeben ist muss der direkt mit in den redirect request um an die service URL zu kommen mit
+    # der service URL und dem access token-> nein muss er nicht weil ich bei dem derzeitigen System bei einem Anmeldebildschirm lande.
+    # Ich muss irgendwie detecten, dass ich nicht bei einer rdf bin und dann eine Fehlermeldung ausgeben bzw, falls ein
+    # access tojkmen gegeben ist den request nochmal machen.
+    # Derzeit ist es so, dass GitLab aber auch im raw format gesendete Daten im
+    # Wenn access denied ist müsste es ein http code dafür geben.
+    # TODO: schrieb das alles nochmal sauber in einem ablaufdiagramm auf
 
-    if response.headers['Content-Type'] == 'text/html; charset=utf-8':
-        # Redirect through old html redirect
-        soup = BeautifulSoup(response.text, 'html.parser')
+    # TODO: There could be multiple .html redirects in the future
+    if response_0.headers['Content-Type'] == 'text/html; charset=utf-8':
+        # Get thr url inside the old .html file redirect
+        soup = BeautifulSoup(response_0.text, 'html.parser')
         meta_tags = soup.find_all('meta')
 
         compiled_regex = re.compile('url=.* ')
