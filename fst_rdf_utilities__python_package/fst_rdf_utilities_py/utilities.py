@@ -54,9 +54,28 @@ def follow_all_redirects(persistent_id_url: str, access_token: str =None, break_
         redirect_file_url_cleaned = redirect_url[1].replace(' ', '').replace('"', '')
 
         with requests.Session() as s:
-            response = s.get(redirect_file_url_cleaned)
-            # TODO: The response is 'text/plain; charset=utf-8' and should be something like 'text/turtle; charset=utf-8'
-            #  -> proposal for the new .html version
+            if headers:
+                response_1 = s.get(redirect_file_url_cleaned, headers=headers)
+            else:
+                response_1 = s.get(redirect_file_url_cleaned)
+            # TODO: FIXME: The response of GitLab rwth is 'text/plain; charset=utf-8' and should be something like 'text/turtle; charset=utf-8'
+            #  -> proposal for the new .html version or at the gitlab site
+
+    # Get the url of the site and the response content text at the end of the redirect
+    if (break_before_login_flag
+            and response_1
+            and ('signin' in response_1.url
+                    or 'sign_in' in response_1.url
+                    or 'login' in response_1.url
+                    or 'login' in response_1.url)):
+        # TODO: FIXME: this is hardcoded and only works for our service since the
+        end_redirect_url = redirect_file_url_cleaned.replace('.html', '')
+        end_redirect_response_text = response_0.text
+    else:
+        end_redirect_url = response_1.url
+        end_redirect_response_text = response_1.text
+
+    return end_redirect_url, end_redirect_response_text
 
     # TODO: Add content negotiation
     g = rdflib.Graph()
