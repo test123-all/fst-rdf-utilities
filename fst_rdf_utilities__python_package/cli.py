@@ -19,7 +19,7 @@ def set_up_CLI():
 
 
 def parse_online_RDF_and_save_as_mat(persistent_ID_URL: str,
-                                     cached_data_sets_directory_path: Path|str,
+                                     cached_data_sets_directory_path: (Path, str),
                                      access_token: str=None):
     # TODO check if the URL is a URL and a persistent one
     if access_token:
@@ -47,7 +47,13 @@ def main():
 
     # Run the function
     # Note: At this place there would be room to extend the CLI by different functions
-    parse_online_RDF_and_save_as_mat(args, cached_data_sets_directory_path)
+    if args.access_token:
+        parse_online_RDF_and_save_as_mat(persistent_ID_URL=args.persistent_ID_URL,
+                                         cached_data_sets_directory_path=cached_data_sets_directory_path,
+                                         access_token=args.access_token)
+    else:
+        parse_online_RDF_and_save_as_mat(persistent_ID_URL=args.persistent_ID_URL,
+                                         cached_data_sets_directory_path=cached_data_sets_directory_path)
 
 
 if __name__ == '__main__':
