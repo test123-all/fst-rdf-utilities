@@ -256,9 +256,8 @@ def parse_url_into_parts(url) -> dict:
     return return_variables_dict
 
 
-def get_version_commit_hash(url):
+def get_git_instance_service(url: str) -> str:
     return_variables_dict = parse_url_into_parts(url)
-
     # Get wether the service lives on GitLab or something else
     # TODO: github gitea
     with requests.Session() as s:
@@ -270,9 +269,16 @@ def get_version_commit_hash(url):
         # Filter funktion return true or false
         return tag.name == 'meta' and tag.has_attr('property') and tag['property'] == 'og:site_name'
 
+    # FIXME: TODO: The site name might not always indicate which service is used. But the one from the GitLab RWTH does.
     meta_site_name_soup = soup.find_all(is_meta_tag_with_property_attribute)
-    if not meta_site_name_soup[0]['content'] == 'GitLab':
-        raise Exception(f"{meta_site_name_soup[0]['content']} is currently not supported!")
+    try:
+        git_instance_name = meta_site_name_soup[0]['content']  # In the GitLab RWTH case it is 'GitLab'
+    except Exception:
+        git_instance_name = None
+
+    return git_instance_name
+
+
 
     api_base_url = f"{return_variables_dict['base_url']}/api/v4/"
 
