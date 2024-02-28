@@ -1,6 +1,21 @@
 %test_pid_URL = 'https://w3id.org/fst/resource/0184ebd9-988b-7bba-8203-06be5cf6bbb8';
 
-function [file_name, pID_sensor] = retrieveRDFDataset(pID_url)
+function [file_name, pID_sensor] = retrieveRDFDataset(pID_url, varargin)
+
+p = inputParser;
+% TODO: Add a function validator that checks if the input is a char
+addParameter(p, "config_json_file_path", "") % @(x)isChar);
+parse(p, varargin{:});
+
+access_token = '';
+if ~strcmp(p.Results.config_json_file_path, "")
+    fileID = fopen(p.Results.config_json_file_path, 'r');
+    [A,~] = fscanf(fileID, '%s');
+
+    json_value_struct = jsondecode(A);
+    access_token = json_value_struct.access_token;
+end
+
 currentFileFullPath = mfilename('fullpath');
 [dirpath,~,~] = fileparts(currentFileFullPath);
 % Path to the testing environment
@@ -28,7 +43,14 @@ end
 
 if exists_returncode == 0 || calculated_difference >= cached_dataset_ttl_value
     % ----- NOTE possible attack vector for a code ingestion attack! --------
-    command = ['python ', fst_rdf_utilities__python_package_path, '\cli.py "', char(pID_url), '"'];
+    if ~strcmp(access_token, '')
+        command = ['python ', fst_rdf_utilities__python_package_path, '\cli.py ', '--access_token "', char(access_token), '" "', char(pID_url), '"'];
+        disp(command)
+    else
+        command = ['python ', fst_rdf_utilities__python_package_path, '\cli.py "', char(pID_url), '"'];
+        disp(command)
+    end
+    
     [status,cmdout] = system(command);
     if status ~= 0
         error(['FST_ASAM_XIL_API ERROR: ', cmdout])
