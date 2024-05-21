@@ -14,6 +14,7 @@ if ~strcmp(p.Results.config_json_file_path, "")
 
     json_value_struct = jsondecode(A);
     access_token = json_value_struct.access_token;
+    fclose(fileID);
 end
 
 currentFileFullPath = mfilename('fullpath');
