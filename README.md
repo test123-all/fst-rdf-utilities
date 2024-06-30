@@ -5,7 +5,7 @@ This is the repository of the FST RDF utilities, a python package/software with 
 <br>
 <br>
 <b>DISCLAIMER</b>:<br>
-This software is in a early proof of concept phase and mentioned in the ... paper. If you want to pay credit to this software in its current raw proof of concept state please cite the paper.<br>
+This software is in a early proof of concept phase and mentioned in the https://preprints.inggrid.org/repository/view/40/ paper. If you want to pay credit to this software in its current raw proof of concept state please cite the paper.<br>
 <br>
 Since this software is in a early proof of concept phase it is not commented out sufficiently yet, the functional segregation isn't good and in conclusion the function and variable names might be subject to siginificant change in the future. Therefore the backwards compatbility of the API won't be granted for now. <br>
 <br>
@@ -13,3 +13,8 @@ As of the current plans the refactoring work will be done somewhere between the 
 
 ## Current Maintainers:
 sebastian.neumeieratstud.tu-darmstadt.de
+
+## Creators:
+This software was originally created by: <br>
+**Sebastian Neumeier (https://orcid.org/0000-0001-9533-9004)**:  Conceptualization, Implementation, Documentation <br>
+**Manuel Rexer (https://orcid.org/0000-0003-0559-1156)**: Project Manager, Provider of Use Cases and Requirements <br>
