@@ -1,7 +1,7 @@
 function rdf_data_struct = load_cached_rdf_datasets()
 full_filepath = mfilename('fullpath');
 [dirpath,~,~] = fileparts(full_filepath);
-cached_data_sets_dir_path = [dirpath, '\rdf_test\_cached_data_sets'];
+cached_data_sets_dir_path = [dirpath, '\..\fst_rdf_utilities__python_package\_cached_data_sets'];
 file_list = dir(cached_data_sets_dir_path);
 
 rdf_data_struct = struct();
