@@ -1,4 +1,4 @@
-function rdf_data_struct = load_cached_rdf_datasets()
+function rdf_data_struct = loadCachedRDFDatasets()
 full_filepath = mfilename('fullpath');
 [dirpath,~,~] = fileparts(full_filepath);
 cached_data_sets_dir_path = [dirpath, '\..\fst_rdf_utilities__python_package\_cached_data_sets'];

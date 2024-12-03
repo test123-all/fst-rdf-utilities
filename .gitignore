@@ -1,5 +1,6 @@
 # Ignore all __pycache__ directories
 **/__pycache__/*
+**/EXAMPLE.config.json/**
 
 # Ignore the retrieved and cached datasets
 /fst_rdf_utilities__python_package/_cached_data_sets/*
