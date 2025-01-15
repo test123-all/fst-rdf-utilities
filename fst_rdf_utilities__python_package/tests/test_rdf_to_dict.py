@@ -1,12 +1,12 @@
 import unittest
 from pathlib import Path
 
-import numpy as np
+# import numpy as np
 import rdflib
-import scipy.io as sio
+# import scipy.io as sio
 
-from rdf_test import utilities
-from rdf_test import rdf_to_dict
+from fst_rdf_utilities__python_package.fst_rdf_utilities_py import utilities
+from fst_rdf_utilities__python_package.fst_rdf_utilities_py import rdf_to_dict
 
 persistent_id_url = 'https://w3id.org/fst/resource/0184ebd9-988b-7bba-8203-06be5cf6bbb8'
 
@@ -532,7 +532,7 @@ class Test__parse_RDF_to_dict(unittest.TestCase):
     with Path(f'{current_file_dir_path}/sensor_rdf.ttl').open('r') as f:
         graph.parse(data=f.read(), format="turtle")
 
-    parsed_dict = rdf_to_dict.parse_RDF_to_dict(graph=graph, main_subject=rdflib.URIRef(
+    parsed_dict = rdf_to_dict._parse_RDF_graph_to_dict(graph=graph, main_subject=rdflib.URIRef(
         persistent_id_url))  # 'https://w3id.org/fst/resource/0184ebd9-988b-7bba-8203-06be5cf6bbb8'
 
     def test_00(self) -> None:
