@@ -1,16 +1,15 @@
 import re
 from pathlib import Path
 import base64
-from copy import deepcopy
-import sys
+# from copy import deepcopy
+# import sys
 # sys.setrecursionlimit(5000)
 
 import rdflib
-from rdflib import URIRef
+# from rdflib import URIRef
 import requests
 from bs4 import BeautifulSoup
-import validators.url
-
+# import validators.url
 from scipy import io as sio
 
 

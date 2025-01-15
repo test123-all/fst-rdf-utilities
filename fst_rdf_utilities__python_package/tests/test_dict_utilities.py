@@ -1,6 +1,6 @@
 import unittest
 
-from fst_rdf_utilities__python_package.fst_rdf_utilities_py import dict_utilities
+from fst_rdf_utilities_py import dict_utilities
 
 class Testcombine_dicts_recursively(unittest.TestCase):
     def test_00(self):

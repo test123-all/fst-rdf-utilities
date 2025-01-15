@@ -2,7 +2,7 @@ import unittest
 from pathlib import Path
 
 
-from fst_rdf_utilities__python_package.fst_rdf_utilities_py import rdf_git_repository
+from fst_rdf_utilities_py import rdf_git_repository
 
 # TODO: ##############################################################################################################
 # TODO: This file is completely work in progress like the file it tests, therefore everything is commented out.

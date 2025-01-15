@@ -2,6 +2,8 @@ from os import walk
 from pathlib import Path
 
 import rdflib
+
+
 # Get all
 # TODO: #########################################################################################
 # TODO: This file is completely work in progress.

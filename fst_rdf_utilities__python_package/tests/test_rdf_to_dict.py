@@ -5,8 +5,8 @@ from pathlib import Path
 import rdflib
 # import scipy.io as sio
 
-from fst_rdf_utilities__python_package.fst_rdf_utilities_py import utilities
-from fst_rdf_utilities__python_package.fst_rdf_utilities_py import rdf_to_dict
+from fst_rdf_utilities_py import utilities
+from fst_rdf_utilities_py import rdf_to_dict
 
 persistent_id_url = 'https://w3id.org/fst/resource/0184ebd9-988b-7bba-8203-06be5cf6bbb8'
 

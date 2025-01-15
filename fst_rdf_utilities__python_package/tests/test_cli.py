@@ -1,9 +1,9 @@
 import unittest
 from pathlib import Path
 
-from fst_rdf_utilities__python_package.fst_rdf_utilities_py import utilities
+from fst_rdf_utilities_py import utilities
 
-from fst_rdf_utilities__python_package.cli import parse_online_RDF_and_save_as_mat
+from cli import parse_online_RDF_and_save_as_mat
 
 # Setup environment
 file_directory_path: Path = Path(__file__).resolve().parent

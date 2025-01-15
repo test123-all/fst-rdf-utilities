@@ -2,8 +2,8 @@
 import argparse
 from pathlib import Path
 
-from fst_rdf_utilities__python_package.fst_rdf_utilities_py import utilities
-from fst_rdf_utilities__python_package.fst_rdf_utilities_py import rdf_to_dict
+from fst_rdf_utilities_py import utilities
+from fst_rdf_utilities_py import rdf_to_dict
 
 
 def set_up_CLI():

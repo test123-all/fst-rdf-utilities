@@ -2,8 +2,8 @@ import unittest
 
 import scipy.io as sio
 
-from fst_rdf_utilities__python_package.fst_rdf_utilities_py import utilities
-from fst_rdf_utilities__python_package.fst_rdf_utilities_py import dict_utilities
+from fst_rdf_utilities_py import utilities
+from fst_rdf_utilities_py import dict_utilities
 
 
 # TODO: FIXME: The the following test case is a script, that was used to develop the package.
