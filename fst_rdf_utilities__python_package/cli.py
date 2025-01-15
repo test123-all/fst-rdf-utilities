@@ -28,8 +28,12 @@ def parse_online_RDF_and_save_as_mat(persistent_ID_URL: str,
     else:
         online_rdf_dict, main_subject_uuid = rdf_to_dict.parse_online_RDF_to_dict(persistent_ID_URL)
 
+    # Parse the RDF dict to the matlab .mat conventions.
+    rdf_mat_dict = rdf_to_dict.parse_RDF_dict_to_mat_dict(online_rdf_dict)
+    rdf_mat_dict_keys = list(rdf_mat_dict.keys())
+
     utilities.save_online_RDF_dict_as_mat_file(pID_url=persistent_ID_URL,
-                                               online_rdf_dict=online_rdf_dict[main_subject_uuid],
+                                               online_rdf_dict=rdf_mat_dict[rdf_mat_dict_keys[0]],
                                                save_to_directory_path=cached_data_sets_directory_path)
 
 
