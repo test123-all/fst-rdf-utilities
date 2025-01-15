@@ -1,23 +1,26 @@
-import os
-from pathlib import Path
-import rdflib
 from os import walk
+from pathlib import Path
+
+import rdflib
 # Get all
 # TODO: #########################################################################################
-# TODO: Eigentlich müsste das eine Graph Klasse sein, die die zusätzlichen Funktionen unterstützt
+# TODO: This file is completely work in progress.
+# TODO: #########################################################################################
+
+# TODO: #########################################################################################
+# TODO: Actually, this should be a Graph class that supports the additional functions.
 # TODO: #########################################################################################
 
 def load_rdf_data_repository(root_path: [str, Path]) -> [rdflib.ConjunctiveGraph, dict]:
     # FIXME: TODO: Get the base correctly
     conjunctive_context_graph = rdflib.ConjunctiveGraph(default_graph_base='https://w3id.org/fst/resource/')
 
-    # FIXME: TODO: Such dir zwei Beispieldateien und schreibe Tests für diese Dateien!
+    # FIXME: TODO: Find two example files and write tests for these files!
 
-
-    # TODO: Wie find eich en base pfad von einer Datei herraus?
-    # TODO: Kann ich die namespace prefixes irgendwie mit laden?
-    # TODO: was passiert bei überschneidungen wenn der prefix öfter verwendet wird -> bind befehl ankucken. Evtl. wird eine 1 angehängt
-    # TODO: Warum sind die Namespaces so durcheinander?? Manchmal wird eine 1 angehängt. Warum?
+    # TODO: How do I determine the base path of a file?
+    # TODO: Can I somehow load the namespace prefixes as well?
+    # TODO: What happens with overlaps when the prefix is used multiple times? -> Look into the bind command. Maybe a 1 is appended.
+    # TODO: Why are the namespaces so mixed up?? Sometimes a 1 is appended. Why?
     # conjunctive_context_graph.bind('dbo', rdflib.Namespace('http://dbpedia.org/ontology/'), override=True, replace=False)
     # conjunctive_context_graph.bind('qudt', rdflib.Namespace('http://qudt.org/schema/qudt/'), override=True, replace=False)
     # conjunctive_context_graph.bind('quantitykind', rdflib.Namespace('http://qudt.org/vocab/quantitykind/'), override=True,
