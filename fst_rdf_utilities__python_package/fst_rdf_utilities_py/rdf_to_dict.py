@@ -53,21 +53,40 @@ def _get_uuid_and_prefix(uriref: rdflib.term.URIRef, namespaces: set) -> (str, s
         prefix = f'{prefix}/{joined_together_uuid}/'
 
     return prefix, uuid
-# Schritt 1 ist erstmal zu bekommen was der hauptnod ein der Datei ist
-# Schritt 1.5 Erstelle eine iterated_tuples liste, die alle bereits iterierten tuple enthält
-#### Iteration 1
-# Schritt 2 alle tuple bekommen, die den hauptnode (current node) als subject haben
-# Schritt 3 die tuple in das dict format parsen und (merken, dass ich sie benutzt habe (der iterated_tuples liste hinzufügen))
-# Schritt 4 mir die Objekte in einer Liste merken
-#### Iteration 2
-# Schritt 5 Die Objekte als neue Subjekte (current nodes) verwenden und darüber iterieren
 
-
-# Probleme:
-# 1. was ist das Abbruchkriterium der Iteration? Wenn ich während einer Iteration alle Subjekte durchiteriert habe und die schon in der verwendet Liste sind -> finished flag
-#   wenn nur ein übrig bleibt bekomme ich auch nur da neue objekte, die de rListe hinzugefügt werden.
-# 2. Wie bzw. woher wieß ich wo ich die Elemente dann im dict einfügen muss?
-# 3. wie funktioniert das parsen genau? Für ein triple https://w3id.org/fst/resource/0184ebd9-988b-7bba-8203-06be5cf6bbb8 .. Es muss unterschieden werden zwischen drei Fällen s,p,o(normal), s,p,o(als Literal), s,p,o,(als Literal Liste)
+# # Step 1
+# First, determine what the main node in the file is.
+#
+# # Step 1.5
+# Create an `iterated_tuples` list that contains all tuples that have already been iterated over.
+#
+# ## Iteration 1
+# ### Step 2
+# Retrieve all tuples that have the main node (current node) as the subject.
+#
+# ### Step 3
+# Parse the tuples into dictionary format and note that they have been used (add them to the `iterated_tuples` list).
+#
+# ### Step 4
+# Remember the objects in a separate list.
+#
+# ## Iteration 2
+# ### Step 5
+# Use the objects as new subjects (current nodes) and iterate over them.
+#
+# # Issues
+# 1. **What is the stopping criterion for the iteration?**
+#    - When, during an iteration, all subjects have been iterated over and are already in the `iterated_tuples` list -> Set a `finished` flag.
+#    - If only one remains, I only get new objects from that one, which are added to the list.
+#
+# 2. **How or where do I know where to insert the elements into the dictionary?**
+#
+# 3. **How does the parsing work exactly?**
+#    For a triple like `https://w3id.org/fst/resource/0184ebd9-988b-7bba-8203-06be5cf6bbb8`:
+#    - It needs to differentiate between three cases:
+#      - `s, p, o` (normal)
+#      - `s, p, o` (as a literal)
+#      - `s, p, o` (as a literal list)
 
 
 def _parse_subgraph_to_dict(subgraph: rdflib.Graph, subject: rdflib.term.URIRef):
@@ -110,22 +129,23 @@ def _parse_subgraph_to_dict(subgraph: rdflib.Graph, subject: rdflib.term.URIRef)
                 Literal_flag = False
                 break
 
-        # Welche fälle können nicht auftreten? Beide True (enthält von beide etwas) oder beide False(enthält von beiden nichts, sollteenicht auftreten)
+        # Which cases don't appear? Both True (contains something from both) or both False(doesn't contain anything
+        # from both, that case shouldn't appear)
         # TODO: Make a second exception for the second case.
         if (URIRef_flag == True and Literal_flag == True
             or URIRef_flag == False and Literal_flag == False):
             raise Exception('There is a subject connected with a predicate to at least one URIRef and at least one Literal. This unambigous and forbidden!')
         ######
 
-        # Es ist möglich, dass eins,p mehrere uriefs als objekte hat, wenn es ein literal ist
-        # Es muss unterschieden werden zwischen drei Fällen s,p,o(normal), s,p,o(als Literal), s,p,o,(als Literal Liste)
-        # CASE 1 s,p,o(normal)
+        # It is possible that s, p has multiple values as objects when it is a literal.
+        # It needs to be distinguished between three cases: s, p, o (normal), s, p, o (as a literal), s, p, o (as a literal list).
+        # CASE 1 s, p, o (normal)
         if URIRef_flag:
             for triple in sorted_triple_list:
                 [current_object_prefix, current_object_uuid] = _get_uuid_and_prefix(rdflib.URIRef(str(triple[2])), namespaces)
                 sub_dict[current_subject_uuid][current_distinct_predicate_uuid][current_object_uuid] = {}
                 sub_dict[current_subject_uuid][current_distinct_predicate_uuid][current_object_uuid]['prefix'] = current_object_prefix
-        # CASE 2 s,p,o(als Literal)
+        # CASE 2 s,p,o(as a Literal)
         # TODO: check wether all of them are literals
         elif Literal_flag:
             if len(sorted_triple_list) == 1:
@@ -135,7 +155,7 @@ def _parse_subgraph_to_dict(subgraph: rdflib.Graph, subject: rdflib.term.URIRef)
                 except AttributeError:
                     sub_dict[current_subject_uuid][current_distinct_predicate_uuid]['datatype'] = 'http://www.w3.org/2001/XMLSchema#string'
 
-            # CASE 3 s,p,o,(als Literal Liste)
+            # CASE 3 s,p,o,(as a literal list)
             # Check if for the current subject they are predicates that occur multiple times and all point to literals
             # and collect them in a list.
             elif len(sorted_triple_list) > 1:
@@ -164,12 +184,13 @@ def _parse_subgraph_to_dict(subgraph: rdflib.Graph, subject: rdflib.term.URIRef)
 
     return sub_dict
 
+
 def _parse_RDF_graph_to_dict(graph: rdflib.Graph, main_subject: rdflib.URIRef):
-    # Schritt 1 ist erstmal zu bekommen was der hauptnod ein der Datei ist
+    # Step 1 First, determine what the main node in the file is.
     # -> main subject
     rdf_dict = {}
 
-    # Schritt 1.5 Erstelle eine iterated_triple liste, die dann alle bereits iterierten tuple enthält
+    # Step 1.5 Create an `iterated_tuples` list that contains all tuples that have already been iterated over.
     subjects_list = []
     subject_dict = {'target': main_subject,
                     'path_to_target': '',
@@ -180,7 +201,8 @@ def _parse_RDF_graph_to_dict(graph: rdflib.Graph, main_subject: rdflib.URIRef):
         objects_list = []
         for subject in subjects_list:
             #### Iteration 1
-            # Schritt 2 alle triple bekommen, die den hauptnode (current node) als subject haben und in sub graphen parsen
+            # Step 2: Retrieve all triples that have the main node (current node) as the subject and parse them into
+            # subgraphs.
             triples = list(graph.triples((subject['target'], None, None)))
             temp_graph = rdflib.Graph(namespace_manager=graph.namespace_manager)
 
@@ -191,7 +213,7 @@ def _parse_RDF_graph_to_dict(graph: rdflib.Graph, main_subject: rdflib.URIRef):
                 temp_graph.add(triple)
                 graph.remove(triple)
 
-                # Schritt 3 mir die URIRefObjekte und die Pfade dort hin in einer Liste merken
+                # Step 3: Keep track of the URIRef objects and the paths to them in a list.
                 objects_dict = {}
                 if isinstance(triple[2], rdflib.URIRef):
                     objects_dict['target'] = triple[2]
@@ -208,29 +230,29 @@ def _parse_RDF_graph_to_dict(graph: rdflib.Graph, main_subject: rdflib.URIRef):
 
                 objects_list.append(objects_dict)
 
-            # Schritt 4 die tuple in das dict format parsen und (merken, dass ich sie benutzt habe (der iterated_tuples liste hinzufügen))
+            # Step 4: Parse the tuples into dictionary format and note that they have been used (add them to the iterated_tuples list).
             sub_dict = _parse_subgraph_to_dict(subgraph=temp_graph, subject=subject['target'])
 
             # TODO: FIXME: es fehlt noch, dass ich weiß wo ich den subgraphen im main dict hinzufügen muss
-            # Schritt 5 die sub_dict dem haupt dict hinzufügen
-            # Woher weiß ich wo ich das hinzufügen muss? Ich kann mir den Weg zu dem object merken und in einem dict mit ablegen und das dann zum parsen nutzen
+            # Step 5: Add the sub_dict to the main dict.
+            # How do I know where to add it? I can remember the path to the object and store it in a dict, then use that for parsing.
             # WARNING: FIXME: DIRTY WORKAROUND!
             if subject['path_to_target'] != '':
-                # Jedesmal wenn der Pfad ungleich '' ist wird irgendwie etwas überschrieben
+                # Every time the path is not equal to '', something gets overwritten.
                 value = get_value_inside_nested_dict_with_path(rdf_dict, subject['path_to_target'])
                 if value is not None:
                     rdf_dict = set_value_inside_nested_dict_with_path(deepcopy(rdf_dict), subject['path_to_target'], combine_dicts_recursively(value, deepcopy(sub_dict)))
 
             else:
                 rdf_dict = set_value_inside_nested_dict_with_path(deepcopy(rdf_dict), subject['path_to_target'], deepcopy(sub_dict))
-            # In der ersten iteration ist es einfach nur '0184ebd9-988b-7bba-8203-06be5cf6bbb8' und dann kette ich prädikat uuid und objekt uuid aneinander.
-            # und das muss ich mir dann auch in der objekt list mit weg speichern
+            # In the first iteration, it is simply '0184ebd9-988b-7bba-8203-06be5cf6bbb8', and then I chain the predicate UUID and object UUID together.
+            # I also need to store this path in the object list.
         subjects_list = objects_list
 
     return rdf_dict
 
     #### Iteration 2
-    # Schritt 5 Die Objekte als neue Subjekte (current nodes) verwenden und darüber iterieren
+    # Step 5: Use the objects as new subjects (current nodes) and iterate over them.
 
 
 def parse_RDF_file_to_dict(file_path: [str, Path], main_subject: rdflib.URIRef, main_subject_prefix: str) -> dict:
@@ -243,17 +265,19 @@ def parse_RDF_file_to_dict(file_path: [str, Path], main_subject: rdflib.URIRef, 
     with Path(file_path).open('r') as f:
         graph.parse(data=f.read(), format="turtle")
 
-    rdf_dict = rdf_to_dict.parse_RDF_to_dict(graph=graph, main_subject=rdflib.URIRef(main_subject))  # 'https://w3id.org/fst/resource/0184ebd9-988b-7bba-8203-06be5cf6bbb8'
+    rdf_dict = _parse_RDF_graph_to_dict(graph=graph, main_subject=rdflib.URIRef(main_subject))  # 'https://w3id.org/fst/resource/0184ebd9-988b-7bba-8203-06be5cf6bbb8'
 
     return rdf_dict
 
+
 def parse_online_RDF_to_dict(persistent_id_url: str, access_token: str =None) -> (dict, str):
-    # TODO: That only works for normal requests that aren't to private files. For private files the API of gitlab needs to be used. This apis probably differ between all big git instances like GitLab, GitHub, Gitea, GitBucket, SourceForge, Gogs and so on
-    # Wenn kein Token gegeben ist  kann ein normaler request benutzt werden, der für alle plattformen funktionieren sollte
+    # TODO: FIXME: That only works for normal requests that aren't to private files. For private files the API of gitlab needs to be used. This apis probably differ between all big git instances like GitLab, GitHub, Gitea, GitBucket, SourceForge, Gogs and so on
+    #  If no token is provided, a normal request can be used, which should work for all platforms.
     if not access_token:
         graph, version_commit_id = load_git_rdf(persistent_id_url)
     else:
-        # Alternativ muss ein request über die API geschehen, die sich bei allen Plattformen wahrscheinlich unterscheided. D.h. es muss erstmal bestimmt werdne wlevhe platform es ist
+        # Alternatively, a request must be made through the API, which is likely different for each platform.
+        # This means it must first be determined which platform it is. Which happens in the following function.
         graph, version_commit_id = load_git_rdf(persistent_id_url, access_token=access_token)
 
     # Check if the main_subject exists as a subject in the graph
