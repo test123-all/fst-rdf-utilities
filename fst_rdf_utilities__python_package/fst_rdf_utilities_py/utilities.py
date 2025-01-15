@@ -194,6 +194,7 @@ def get_git_instance_service(url: str) -> str:
 
 
 def get_GitLab_file_content_and_version_commit_id(url, access_token:str=None):
+    # TODO: Other services should be supported too. This functions should be outsourced into their own files.
     # TODO: declare this function as private and create a get_rdf_file_content_and_version_commit_id function and add
     #  at position one a argument service_id or service_name and match it to the supported ones and call the private
     #  functions.
@@ -202,7 +203,6 @@ def get_GitLab_file_content_and_version_commit_id(url, access_token:str=None):
     else:
         headers = None
     return_variables_dict = parse_url_into_parts(url)
-
 
 
     api_base_url = f"{return_variables_dict['base_url']}/api/v4/"

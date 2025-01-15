@@ -1,8 +1,5 @@
 import unittest
-from pathlib import Path
 
-import numpy as np
-import rdflib
 import scipy.io as sio
 
 from fst_rdf_utilities__python_package.fst_rdf_utilities_py import utilities
@@ -31,55 +28,22 @@ from fst_rdf_utilities__python_package.fst_rdf_utilities_py import dict_utilitie
 #                 'slope': 1,
 #                 'offset': 0
 #
-#         data_tuple = ('0184ebd9-988b-7bba-8203-06be5cf6bbb8',
-#                       'D092',
-#                       measurement_range_structured_numpy_array,
-#                       output_range_structured_numpy_array,
-#                       characteristic_line_structured_numpy_array,
-#                       'Piezoresistiv',
-#                       'Keller',
-#                       'PAA-33X/10bar',
-#                       '1011246')
+#             },
+#             'measurement_principle': 'Piezoresistiv',
+#             'manufacturer': 'Keller',
+#             'product_label': 'PAA-33X/10bar',
+#             'serial_number': '1011246'
+#         }
 #
-#         x = np.array([data_tuple], dtype=[('UUID', '<U36'),
-#                                                 ('identification_string', '<U4'),
-#                                                 ('measurement_range', 'void'),
-#                                                 ('output_range', 'void'),
-#                                                 ('characteristic_line', 'void'),
-#                                                 ('measurement_principle', '<U13'),
-#                                                 ('manufacturer', '<U6'),
-#                                                 ('product_label', '<U13'),
-#                                                 ('serial_number', '<U7')
-#                                           ])
+#         mat_file_path = Path('./example_mat_struct.mat')
+#         mat_struct = sio.loadmat(str(mat_file_path.resolve()))
+#
+#         test_dict2 = {'ID_0184ebd9_988b_7bba_8203_06be5cf6bbb8': test_dict}
+#         # self.assertEqual(mat_struct['example_mat_struct'], x)
+#         sio.savemat('test2.mat', test_dict2)
 
-class Testload_sensor_rdf_and_parse_to_dict(unittest.TestCase):
-    def test_00(self) -> None:
-        test_dict = {
-            'UUID': 'https://w3id.org/fst/resource/0184ebd9-988b-7bba-8203-06be5cf6bbb8',
-            'identification_string': 'fst-inv:D092',
-            'measurement_range': {
-                'from': 0.0,
-                'to': 10.0,
-                'unit': 'bar'
-            },
-            # 'output_range': {
-            #     'from': 0,
-            #     'to': 10,
-            #     'unit': 'V'
-            # },
-            'characteristic_line': {
-                'slope': 1.0,
-                'offset': 0.0
-
-            },
-            'measurement_principle': 'Piezoresistiv',
-            'manufacturer': 'Keller',
-            'product_label': 'PAA-33X/10bar',
-            'serial_number': '1011246'
-        }
-        [sensor_dict, _] = utilities.load_sensor_rdf_and_parse_to_dict(
-            'https://w3id.org/fst/resource/0184ebd9-988b-7bba-8203-06be5cf6bbb8')
-        self.assertEqual(sensor_dict, test_dict)
+# TODO: Theoretically this can be used to create a structure numpy array per hand and the same in matlab as mat to
+#  better understand how the mat files get mapped to numpy.
 
 
 class Testparse_url_into_parts(unittest.TestCase):

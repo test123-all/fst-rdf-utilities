@@ -1,7 +1,7 @@
 import re
 from pathlib import Path
 from copy import deepcopy
-import sys
+# import sys
 # sys.setrecursionlimit(5000)
 
 import rdflib
