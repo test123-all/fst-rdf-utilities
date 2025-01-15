@@ -52,19 +52,6 @@ def _get_uuid_and_prefix(uriref: rdflib.term.URIRef, namespaces: set) -> (str, s
         joined_together_uuid = "/".join(uuid_splitted[:-1])
         prefix = f'{prefix}/{joined_together_uuid}/'
 
-    # Check if the uuid contains '.' if yes split it atgh the '.' symbol and use the last elemnt as uuid and append
-    # the rest with the point to the prefix.
-    if ('.' in uuid
-            or len(uuid) > 32): # struct field names longer than 32 characters are forbidden in matlab
-        # uuid_splitted = uuid.split('.')
-        # prefix = f'{prefix}/{".".join(uuid_splitted[:-1])}.'
-        # uuid = uuid_splitted[-1]
-        prefix = f'{prefix}/{uuid}'  # combine the back together
-
-        # Calculate the blake2s hash
-        uuid_hex_hash = hashlib.blake2s(uuid.encode(encoding="UTF-8"), digest_size=32).hexdigest()
-        uuid = f'FORBID_{uuid_hex_hash[:23]}' #
-        
     return prefix, uuid
 # Schritt 1 ist erstmal zu bekommen was der hauptnod ein der Datei ist
 # Schritt 1.5 Erstelle eine iterated_tuples liste, die alle bereits iterierten tuple enthält
@@ -303,3 +290,45 @@ def parse_online_RDF_to_dict(persistent_id_url: str, access_token: str =None) ->
 
     return online_rdf_dict, main_subject_uuid
 
+
+def parse_RDF_dict_to_mat_dict(rdf_dict: dict)  -> dict:
+    """
+    Recursively iterate over the provided nested RDF dictionary and rename the keys if the following problems
+    should occur:
+    1. If it contains '-' rename them as '_'
+    2. If keys exceed 32 characters, rename to the shortend blake2s hash (longer field names are forbidden in Matlab)
+    3. If keys containing a '.' character, rename to the shortend blake2s hash (for example ein case of URls with a
+        file ending).
+    and return the modified dictionary.
+
+    # # TODO: parameters
+    """
+    def _clean_dict_key(key):
+        """Rename the keys when they are affected by the provided criteria"""
+        # Check if the uuid contains '.' if yes split it atgh the '.' symbol and use the last elemnt as uuid and append
+        # the rest with the point to the prefix.
+        # TODO: FIXME: matlab workaround
+        if ('.' in key
+                or len(key) > 32):
+            # Calculate the blake2s hash.
+            key_hex_hash = hashlib.blake2s(key.encode(encoding="UTF-8"), digest_size=32).hexdigest()
+            new_key = f'FORBID_{key_hex_hash[:23]}'
+            # The blake2s key will never contain '-' therefore it is okay to opt out at this point.
+            return new_key
+
+        if '-' in key:
+            return key.replace('-', '_')
+
+        return key
+
+
+    def _recursively_process_dict(input_dictionary: dict) -> dict:
+        if isinstance(input_dictionary, dict):
+            new_dict = {}
+            for key, item in input_dictionary.items():
+                new_key = _clean_dict_key(key)
+                new_dict[new_key] = _recursively_process_dict(item)
+            return new_dict
+        return input_dictionary
+
+    return _recursively_process_dict(rdf_dict)
