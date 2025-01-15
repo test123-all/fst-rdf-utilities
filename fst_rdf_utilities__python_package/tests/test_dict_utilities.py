@@ -1,6 +1,6 @@
 import unittest
 
-from rdf_test import dict_utilities
+from fst_rdf_utilities__python_package.fst_rdf_utilities_py import dict_utilities
 
 class Testcombine_dicts_recursively(unittest.TestCase):
     def test_00(self):
@@ -33,7 +33,7 @@ class Testcombine_dicts_recursively(unittest.TestCase):
         dict_utilities.combine_dicts_recursively(expected_dict, parsed_dict)
 
     def test_01(self):
-        # Test for the combinedict function with deeper nesting
+        # Test the combine_dicts_recursively function with deeper nesting.
         dict_1 = {
             'a': 'test1',
             'b': {
@@ -76,7 +76,7 @@ class Testcombine_dicts_recursively(unittest.TestCase):
         dict_utilities.combine_dicts_recursively(expected_dict, parsed_dict)
 
     def test_02(self):
-        # Test for the combinedict function that rasies an error
+        # Test for the combine_dicts_recursively function that it correctly raises an exception.
         dict_1 = {
             'a': 'test1',
             'b': {
